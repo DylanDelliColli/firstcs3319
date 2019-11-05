@@ -1,0 +1,46 @@
+-- Dylan Delli Colli
+-- DDELLICO@uwo.ca
+-- 250912759
+
+-- connect to database
+USE ddellicoassign2db;
+
+-- query 1: display all patient's last names
+SELECT lastName FROM Patients;
+
+-- query 2: display all patient's last names with no repeats
+SELECT DISTINCT lastName FROM Patients;
+
+-- query 3: display all doctor information ordered by last name from A-Z
+SELECT * FROM Doctors ORDER BY lastName ASC;
+
+-- query 4: display hospital name and beds for Hospitals that have over 1500 beds
+SELECT name, numBeds FROM Hospitals WHERE (numBeds > 1500);
+
+-- query 5: List the last name and first name of all the doctors who work at St. Josephs Hospital
+SELECT lastName, firstName FROM Doctors WHERE worksFrom = (SELECT hospitalCode FROM Hospitals WHERE name = "St. Joseph");
+
+-- query 6: List the first name and last name of all patients whose last name begins with a "G"
+SELECT firstname, lastname FROM Patients WHERE lastname LIKE "G%";
+
+-- query 7: List the first name and last name of all patients who are treated by a doctor with the last name of Clooney
+SELECT Patients.firstName, Patients.lastName FROM Patients INNER JOIN (Is_Assigned INNER JOIN Doctors USING (licenseNum)) USING (OHIP) WHERE Doctors.lastName LIKE "Clooney";
+
+-- query 8: List the hospital name, city and the last name of the head doctor of that hospital
+SELECT name, city, lastName FROM Hospitals INNER JOIN Doctors ON headDoctor = licenseNum;
+
+-- query 9: Find the total number of beds for all the hospitals and give the result a nice title like "Total Number of Beds"
+SELECT SUM(numBeds) AS "Total Number of Beds" FROM Hospitals;
+
+-- query 10: List the first names of the patient and the first name of the doctor for all patients treated by a head doctor
+SELECT Patients.firstName, Doctors.firstName FROM Patients INNER JOIN (Is_Assigned INNER JOIN (Hospitals INNER JOIN Doctors ON headDoctor = licenseNum) USING (licenseNum)) USING (OHIP);
+
+-- query 11: Find all the surgeons who work at a hospital called Victoria
+SELECT firstName, lastName FROM Doctors INNER JOIN Hospitals ON worksFrom = hospitalCode WHERE name LIKE "Victoria" AND specialty LIKE "Surgeon";
+
+-- query 12: Find the first name of all doctors who don't treat anyone
+SELECT firstname FROM Doctors WHERE licenseNum NOT IN (SELECT licenseNum FROM Is_Assigned);
+
+-- query 13: Find all doctors who treat MORE than one patient
+SELECT firstName, lastName FROM Doctors WHERE licenseNum IN (SELECT licenseNum FROM Is_Assigned GROUP BY licenseNum HAVING count(OHIP) > 1);
+

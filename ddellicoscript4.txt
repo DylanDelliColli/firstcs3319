@@ -1,0 +1,37 @@
+-- Dylan Delli Colli
+-- DDELLICO@uwo.ca
+-- 250912759
+
+
+-- connect to database
+USE ddellicoassign2db;
+
+-- delete any doctor who got their license before January 1st, 1965
+DELETE from Doctors WHERE dateLicensed < "1965-01-01";
+-- This didn't work because the only doctors selected are head doctors and since they are foreign keys cannot be deleted
+
+-- create a view that shows all patients' first and last names who are being treated by head doctors who were made heads after December 31st, 1995
+CREATE VIEW headPatients AS SELECT CONCAT_WS(',', Patients.firstName, Patients.lastName) AS "Patient", Doctors.lastName, Hospitals.name FROM Patients INNER JOIN (Is_Assigned INNER JOIN (Doctors INNER JOIN Hospitals ON headDoctor = licenseNum) USING (licenseNum)) USING (OHIP) WHERE Hospitals.startDate > "1995-12-31";
+
+-- show the headPatients view to prove view
+SELECT * FROM headPatients;
+
+-- show doctor and Is_Assigned tables
+SELECT * FROM Doctors;
+SELECT * FROM Is_Assigned;
+
+-- delete doctor with last name "Clooney"
+DELETE FROM Doctors WHERE lastName LIKE "Clooney";
+
+-- check to ensure CASCADE delete worked properly
+SELECT * FROM Doctors;
+SELECT * FROM Is_Assigned;
+-- delete did not work properly since it was deleted from both tables
+
+-- delete any doctors who are Surgeons
+DELETE FROM Doctors WHERE specialty LIKE "Surgeon";
+
+-- check to see if delete worked
+SELECT * FROM Doctors;
+SELECT * FROM Is_Assigned;
+-- the delete command didn't work because there exists a surgeon who is a head doctor therefore they are a foreign key and cannot be deleted

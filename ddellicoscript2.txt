@@ -1,0 +1,72 @@
+-- Dylan Delli Colli
+-- DDELLICO@uwo.ca
+-- 250912759
+
+-- connect to correct database
+USE ddellicoassign2db;
+
+-- load data into Patients table
+SELECT * FROM Patients;
+LOAD DATA LOCAL INFILE "loaddatafall2019.txt" INTO TABLE ddellicoassign2db.Patients FIELDS TERMINATED BY ',';
+SELECT * FROM Patients;
+
+-- add myself as patient into Patients table
+SELECT * FROM Patients;
+INSERT INTO Patients VALUES ("123456789", "Dylan", "Delli Colli");
+SELECT * FROM Patients;
+
+-- add Doctors
+SELECT * FROM Doctors;
+INSERT INTO Doctors(licenseNum, firstName, lastName, specialty, dateLicensed) VALUES ("RD34", "Bernie", "Kavorikian", "Urologist", "1980-09-09");
+INSERT INTO Doctors(licenseNum, firstName, lastName, specialty, dateLicensed) VALUES ("GD56", "Joey", "Shabado", "Podiatrist", "1960-06-24");
+INSERT INTO Doctors(licenseNum, firstName, lastName, specialty, dateLicensed) VALUES ("HT45", "Ross", "Clooney", "Surgeon", "1987-06-20");
+INSERT INTO Doctors(licenseNum, firstName, lastName, specialty, dateLicensed) VALUES ("YT67", "Ben", "Spock", "Pediatrician", "1955-02-20");
+INSERT INTO Doctors(licenseNum, firstName, lastName, specialty, dateLicensed) VALUES ("JK78", "Mandy", "Webster", "Surgeon", "1990-08-08");
+INSERT INTO Doctors(licenseNum, firstName, lastName, specialty, dateLicensed) VALUES ("SE66", "Colleen", "Aziz", "Surgeon", "1989-08-24");
+INSERT INTO Doctors(licenseNum, firstName, lastName, specialty, dateLicensed) VALUES ("AA11", "Gregory", "House", "Surgeon", "1998-11-11");
+SELECT * FROM Doctors;
+
+-- add Hospitals
+SELECT * FROM Hospitals;
+INSERT INTO Hospitals(hospitalCode, name, city, province, numBeds, headDoctor, startdate) VALUES ("BBC", "St. Joseph", "London", "ON", "1000", "GD56", "1999-09-10");
+INSERT INTO Hospitals(hospitalCode, name, city, province, numBeds, headDoctor, startdate) VALUES ("ABC", "Victoria", "London", "ON", "1600", "SE66", "1994-12-05");
+INSERT INTO Hospitals(hospitalCode, name, city, province, numBeds, headDoctor, startdate) VALUES ("DDE", "Victoria", "Victoria", "BC", "1200", "YT67", "1997-12-07");
+SELECT * FROM Hospitals;
+
+-- assign patients to correct doctor(s)
+SELECT * FROM Is_Assigned;
+INSERT INTO Is_Assigned VALUE ("GD56", "110112113");
+INSERT INTO Is_Assigned VALUE ("HT45", "444555666");
+INSERT INTO Is_Assigned VALUE ("JK78", "444555666");
+INSERT INTO Is_Assigned VALUE ("SE66", "111222333");
+INSERT INTO Is_Assigned VALUE ("YT67", "111222333");
+INSERT INTO Is_Assigned VALUE ("JK78", "111222333");
+INSERT INTO Is_Assigned VALUE ("GD56", "333444555");
+INSERT INTO Is_Assigned VALUE ("YT67", "667766777");
+INSERT INTO Is_Assigned VALUE ("JK78", "667766777");
+INSERT INTO Is_Assigned VALUE ("GD56", "667766777");
+INSERT INTO Is_Assigned VALUE ("YT67", "111222111");
+INSERT INTO Is_Assigned VALUE ("YT67", "123456789");
+SELECT * FROM Is_Assigned;
+
+-- update doctor table to include the hospital they work at
+SELECT * FROM Doctors;
+UPDATE Doctors SET worksFrom = "BBC" WHERE licenseNum = "RD34";
+UPDATE Doctors SET worksFrom = "BBC" WHERE licenseNum = "GD56";
+UPDATE Doctors SET worksFrom = "DDE" WHERE licenseNum = "HT45";
+UPDATE Doctors SET worksFrom = "DDE" WHERE licenseNum = "YT67";
+UPDATE Doctors SET worksFrom = "BBC" WHERE licenseNum = "JK78";
+UPDATE Doctors SET worksFrom = "ABC" WHERE licenseNum = "SE66";
+UPDATE Doctors SET worksFrom = "ABC" WHERE licenseNum = "AA11";
+SELECT * FROM Doctors;
+
+-- change patient 111222111 last name to Brown
+SELECT * FROM Patients;
+UPDATE Patients SET lastName = "Brown" WHERE OHIP = "111222111";
+SELECT * FROM Patients;
+
+-- change all patients currently seeing Spock so that they are now seeing Clooney
+SELECT * FROM Is_Assigned;
+UPDATE Is_Assigned SET licenseNum= (SELECT licenseNum FROM Doctors WHERE lastName = "Clooney") WHERE licenseNum= (SELECT licenseNum FROM Doctors WHERE lastName= "Spock");
+SELECT * FROM Is_Assigned;
+

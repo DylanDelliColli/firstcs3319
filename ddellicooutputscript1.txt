@@ -1,0 +1,154 @@
+Warning: Using a password on the command line interface can be insecure.
+--------------
+DROP DATABASE IF EXISTS ddellicoassign2db
+--------------
+
+Query OK, 4 rows affected (0.10 sec)
+
+--------------
+CREATE DATABASE ddellicoassign2db
+--------------
+
+Query OK, 1 row affected (0.00 sec)
+
+--------------
+GRANT USAGE ON *.* TO 'ta'@'localhost'
+--------------
+
+Query OK, 0 rows affected (0.00 sec)
+
+--------------
+DROP USER 'ta'@'localhost'
+--------------
+
+Query OK, 0 rows affected (0.00 sec)
+
+--------------
+CREATE USER 'ta' @'localhost' IDENTIFIED BY 'cs3319'
+--------------
+
+Query OK, 0 rows affected (0.00 sec)
+
+--------------
+GRANT ALL PRIVILEGES ON ddellicoassign2db.* TO 'ta'@'localhost'
+--------------
+
+Query OK, 0 rows affected (0.00 sec)
+
+--------------
+FLUSH PRIVILEGES
+--------------
+
+Query OK, 0 rows affected (0.00 sec)
+
+--------------
+SHOW tables
+--------------
+
+Empty set (0.00 sec)
+
+--------------
+CREATE TABLE Doctors (
+	licenseNum varchar(4) NOT NULL,
+	firstName varchar(20) NOT NULL,
+	lastName varchar(20) NOT NULL,
+	specialty varchar(30) NOT NULL,
+	dateLicensed date NOT NULL,
+	PRIMARY KEY (licenseNum)
+)
+--------------
+
+Query OK, 0 rows affected (0.05 sec)
+
+--------------
+CREATE TABLE Hospitals (
+	hospitalCode varchar(3) NOT NULL,
+	name varchar(20),
+	city varchar(20),
+	province varchar(2),
+	headDoctor varchar(4),
+	startDate date,
+	numBeds int,
+	FOREIGN KEY (headDoctor) REFERENCES Doctors(licenseNum),
+	PRIMARY KEY (hospitalCode)
+)
+--------------
+
+Query OK, 0 rows affected (0.14 sec)
+
+--------------
+DESCRIBE Doctors
+--------------
+
++--------------+-------------+------+-----+---------+-------+
+| Field        | Type        | Null | Key | Default | Extra |
++--------------+-------------+------+-----+---------+-------+
+| licenseNum   | varchar(4)  | NO   | PRI | NULL    |       |
+| firstName    | varchar(20) | NO   |     | NULL    |       |
+| lastName     | varchar(20) | NO   |     | NULL    |       |
+| specialty    | varchar(30) | NO   |     | NULL    |       |
+| dateLicensed | date        | NO   |     | NULL    |       |
++--------------+-------------+------+-----+---------+-------+
+5 rows in set (0.00 sec)
+
+--------------
+ALTER TABLE Doctors ADD worksFrom varchar(4), ADD CONSTRAINT FOREIGN KEY (worksFrom) REFERENCES Hospitals(hospitalCode) ON DELETE RESTRICT
+--------------
+
+Query OK, 0 rows affected (0.13 sec)
+Records: 0  Duplicates: 0  Warnings: 0
+
+--------------
+DESCRIBE Doctors
+--------------
+
++--------------+-------------+------+-----+---------+-------+
+| Field        | Type        | Null | Key | Default | Extra |
++--------------+-------------+------+-----+---------+-------+
+| licenseNum   | varchar(4)  | NO   | PRI | NULL    |       |
+| firstName    | varchar(20) | NO   |     | NULL    |       |
+| lastName     | varchar(20) | NO   |     | NULL    |       |
+| specialty    | varchar(30) | NO   |     | NULL    |       |
+| dateLicensed | date        | NO   |     | NULL    |       |
+| worksFrom    | varchar(4)  | YES  | MUL | NULL    |       |
++--------------+-------------+------+-----+---------+-------+
+6 rows in set (0.00 sec)
+
+--------------
+CREATE TABLE Patients (
+	OHIP int NOT NULL,
+	firstName varchar(20),
+	lastName varchar(20),
+	PRIMARY KEY (OHIP)
+)
+--------------
+
+Query OK, 0 rows affected (0.30 sec)
+
+--------------
+CREATE TABLE Is_Assigned (
+	licenseNum varchar(4),
+	OHIP int,
+	FOREIGN KEY (OHIP) REFERENCES Patients(OHIP),
+	FOREIGN KEY (licenseNum) REFERENCES Doctors(licenseNum) ON DELETE CASCADE,
+	PRIMARY KEY (OHIP, licenseNum)
+)
+--------------
+
+Query OK, 0 rows affected (0.05 sec)
+
+--------------
+SHOW tables
+--------------
+
++-----------------------------+
+| Tables_in_ddellicoassign2db |
++-----------------------------+
+| Doctors                     |
+| Hospitals                   |
+| Is_Assigned                 |
+| Patients                    |
++-----------------------------+
+4 rows in set (0.00 sec)
+
+Bye
